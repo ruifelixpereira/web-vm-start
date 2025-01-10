@@ -1,19 +1,33 @@
 <%- include('partials/header.ejs') %>
 <body>
-    <h1>Azure Virtual Machines</h1>
-    <p>
-        <%= homeContent %>
-    </p>
-        <% posts.forEach((post)=>{ %>
-               <div class="postStyle">
-                    <h3><%= post.title %></h3>
-                    <p>
-                        <% var shortText = post.content %>
-                        <% truncShortText = shortText.substring(0, 150) %>
-                        <%= truncShortText %>
-                    </p>
-                    <a href="posts/<%= post.title %>">Read More</a>
-               </div>
+    <p></p>
+    <p>Azure Virtual Machines that can be started in a self-service approach...</p>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">VM name</th>
+            <th scope="col">Resource group</th>
+            <th scope="col">Subscription</th>
+            <th scope="col">State</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        <% vmList.forEach((vm)=>{ %>
+            <tr>
+                <th scope="row"><%= vm.name %></th>
+                <td><%= vm.resourceGroup %></td>
+                <td><%= vm.subscriptionId %></td>
+                <td><%= vm.powerState %></td>
+                <% if ( vm.powerState.toLowerCase().includes("deallocated") || vm.powerState.toLowerCase().includes("stopped") ) { %>
+                  <td><a href="vm/<%= vm.vmId %>">Start</a></td>
+                <% } else { %>
+                  <td></td>
+                <% } %>
+            </tr>
         <% }) %>
+        </tbody>
+    </table>
 </body>
 <%- include('partials/footer.ejs') %>
