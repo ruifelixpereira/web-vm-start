@@ -1,2 +1,5 @@
 .env
 .vscode
+MYLOG.md
+scripts
+node_modules
