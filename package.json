@@ -11,11 +11,16 @@
   "dependencies": {
     "@azure/arm-compute": "^22.1.0",
     "@azure/identity": "^4.5.0",
+    "@azure/msal-node": "^2.16.2",
     "axios": "^1.7.9",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
-    "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "lodash": "^4.17.21"
+    "express-session": "^1.18.1",
+    "hbs": "^4.2.0",
+    "http-errors": "^2.0.0",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "eslint": "^9.16.0"

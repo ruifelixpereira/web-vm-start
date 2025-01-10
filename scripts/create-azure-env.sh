@@ -141,3 +141,12 @@ else
     echo "Service principal $app_name already exists."
     APP_ID=$(az ad sp list --display-name $app_name --query "[].{appId:appId}" --output tsv)
 fi
+
+
+#redirecttype=spa | web | publicClient
+objectid=$(az ad app show --id $APP_ID --query id --output tsv)
+
+redirecttype=web
+redirecturl=http://localhost:3000/auth/redirect
+graphurl=https://graph.microsoft.com/v1.0/applications/$objectid
+az rest --method PATCH --uri $graphurl --headers 'Content-Type=application/json' --body '{"'$redirecttype'":{"redirectUris":["'$redirecturl'"]}}'

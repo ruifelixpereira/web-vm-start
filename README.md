@@ -4,7 +4,7 @@ This web app allows users to start Azure VMs. It is a simple Node.js app that us
 
 ## Setup Azure resources
 
-You can use the provided script `scripts\create-azure-env.sh`. Copy the file `sample.env` to a new file named `.env`, customize the values for your specific Azure scenario and run it:
+You can use the provided script `scripts\create-azure-env.sh`. Copy the file `scripts\sample.env` to a new file named `scripts\.env`, customize the values for your specific Azure scenario and run it:
 
 ```bash
 cd scripts
@@ -26,6 +26,8 @@ You can build a Docker image with the following command:
 
 ```bash
 docker build -t web-vm-start .
+
+docker run -p 8087:3000 web-vm-start
 ```
 
 
