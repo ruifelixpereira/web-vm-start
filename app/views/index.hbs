@@ -1,0 +1,45 @@
+<p></p>
+{{#if isAuthenticated }}
+
+  <p>Hi <b>{{username}}</b></p>
+
+  {{#if isAuthorized }}
+    <p>You can start Azure Virtual Machines in a self-service approach. If the desired VM shown below is not running just click <b>Start</b> next to it:</p>
+    <p></p>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">VM name</th>
+            <th scope="col">Resource group</th>
+            <th scope="col">Subscription</th>
+            <th scope="col">State</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {{#each vmList}}
+            <tr>
+                <th scope="row">{{name}}</th>
+                <td>{{resourceGroup}}</td>
+                <td>{{subscriptionId}}</td>
+                <td>{{powerState}}</td>
+                {{#if isStopped}}
+                  <td><a href="/srv/{{vmId}}">Start</a></td>
+                {{else}}
+                  <td></td>
+                {{/if}}
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+  {{else}}
+    <p>You are not authorized to start Azure VMs in self-service. Please make sure that your user belongs to the required Security Groups.</p>
+    <p></p>
+  {{/if}}
+
+{{else}}
+  <p>Welcome to {{title}}</p>
+  <p>To start the self-service experience you need to sign-in and have the proper permissions.</p>
+  <a href="/auth/signin">Sign in</a>
+{{/if}}

@@ -1,0 +1,23 @@
+<div class="table-area-div">
+    <p></p>
+    <p>Some of the important claims in your ID token are shown below:</p>
+</div>
+
+<div class="table-area-div">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Claim</th>
+                <th scope="col">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each idTokenClaims}}
+            <tr>
+                <td>{{@key}}</td>
+                <td>{{this}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div> 

@@ -11,8 +11,6 @@ required_vars=(
     "app_name"
     "acr_name"
     "aci_name"
-    "storageaccount_name"
-    "fileshare_name"
     "vnet_name"
     "vnet_prefix"
     "aci_subnet_name"
@@ -71,44 +69,10 @@ fi
 ar_query=$(az acr list --query "[?name=='$acr_name']")
 if [ "$ar_query" == "[]" ]; then
    echo -e "\nCreating Container Registry '$acr_name'"
-   az acr create --resource-group $rg --name $acr_name --sku Basic
+   az acr create --resource-group $rg --name $acr_name --sku Basic --admin-enabled
 else
    echo "Container Registry $acr_name already exists."
 fi
-
-#
-# Create storage account
-#
-sa_query=$(az storage account list --query "[?name=='$storageaccount_name']")
-if [ "$sa_query" == "[]" ]; then
-    echo -e "\nCreating Storage account '$storageaccount_name'"
-    az storage account create \
-        --name $storageaccount_name \
-        --resource-group ${rg} \
-        --allow-blob-public-access false \
-        --allow-shared-key-access true \
-        --kind StorageV2 \
-        --sku Standard_LRS
-else
-    echo "Storage account $storageaccount_name already exists."
-fi
-
-#
-# Create file share
-#
-fs_query=$(az storage share-rm list -g $rg --storage-account $storageaccount_name --query "[?name=='$fileshare_name']")
-if [ "$fs_query" == "[]" ]; then
-    echo -e "\nCreating File share '$fileshare_name'"
-    az storage share-rm create \
-        --resource-group $rg \
-        --storage-account $storageaccount_name \
-        --name $fileshare_name \
-        --access-tier Hot \
-        --output none
-else
-    echo "File share $fileshare_name already exists."
-fi
-
 
 #
 # Create VNET
@@ -142,11 +106,14 @@ else
     APP_ID=$(az ad sp list --display-name $app_name --query "[].{appId:appId}" --output tsv)
 fi
 
-
-#redirecttype=spa | web | publicClient
+redirecttype=web
 objectid=$(az ad app show --id $APP_ID --query id --output tsv)
 
 redirecttype=web
 redirecturl=http://localhost:3000/auth/redirect
 graphurl=https://graph.microsoft.com/v1.0/applications/$objectid
 az rest --method PATCH --uri $graphurl --headers 'Content-Type=application/json' --body '{"'$redirecttype'":{"redirectUris":["'$redirecturl'"]}}'
+
+# Grant access from the AAD application to the ACR
+#resourceID=$(az acr show --resource-group $rg --name acr_name --query id --output tsv)
+#az role assignment create --assignee $objectid --scope $resourceID --role acrpull

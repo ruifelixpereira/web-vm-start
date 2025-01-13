@@ -24,15 +24,19 @@ router.get('/:id',
 
         try {
 
-            if (!vmList) {
-                throw new Error("No VMs in the list for this session.");
+            // Check if the user is member of the required security groups
+            // Check if the user is member of the required security groups
+            const groups = process.env.SECURITY_GROUPS.split(',') || [];
+            const userGroups = req.session.account.idTokenClaims.groups || [];
+            const isMember = groups.some(group => userGroups.includes(group));
+
+            if (isMember && vmList) {
+                // GET vm
+                const vm = vmList.find(vm => vm.vmId === vmId);
+    
+                // Start VM
+                await startVm(vm.subscriptionId, vm.resourceGroup, vm.name);
             }
-
-            // GET vm
-            const vm = vmList.find(vm => vm.vmId === vmId);
-
-            // Start VM
-            await startVm(vm.subscriptionId, vm.resourceGroup, vm.name);
 
             res.redirect('/')
         }

@@ -6,11 +6,13 @@ set -a && source .env && set +a
 # Required variables
 required_vars=(
     "rg"
-    "location"
+    "aci_name"
+    "aci_dns"
+    "acr_name"
+    "image_name"
+    "image_version"
     "vnet_name"
-    "vnet_prefix"
     "aci_subnet_name"
-    "aci_subnet_prefix"
 )
 
 # Set the current directory to where the script lives.
@@ -48,36 +50,26 @@ check_required_arguments
 
 ####################################################################################
 
-#
-# Create  VM 01
-#
-az vm create \
-    -n test-vm-01 \
-    -g $rg \
-    -l $location \
-    --image Ubuntu2204 \
-    --size Standard_B2s \
-    --storage-sku Standard_LRS \
-    --generate-ssh-keys \
-    --public-ip-address "" \
-    --vnet-name $vnet_name \
-    --vnet-address-prefix $vnet_prefix \
-    --subnet $aci_subnet_name \
-    --subnet-address-prefix $aci_subnet_prefix
+# Get login server name
+acrLoginServer=$(az acr show --name $acr_name --query loginServer --output tsv)
 
-#
-# Create  VM 02
-#
-az vm create \
-    -n test-vm-02 \
-    -g $rg \
-    -l $location \
-    --image Ubuntu2204 \
-    --size Standard_B2s \
-    --storage-sku Standard_LRS \
-    --generate-ssh-keys \
-    --public-ip-address "" \
-    --vnet-name $vnet_name \
-    --vnet-address-prefix $vnet_prefix \
+# Get VNET Id
+VNET_ID =$(az network vnet show --resource-group $rg --name $vnet_name --query id --output tsv)
+
+# Deploy container
+az container create \
+    --resource-group $rg \
+    --name $aci_name \
+    --image $acrLoginServer/$image_name:$image_version \
+    --cpu 1 \
+    --memory 1 \
+    --registry-login-server $acrLoginServer \
+    --registry-username <service-principal-ID> \
+    --registry-password <service-principal-password> \
+    --dns-name-label $aci_dns \
+    --vnet $VNET_ID \
     --subnet $aci_subnet_name \
-    --subnet-address-prefix $aci_subnet_prefix
+    --ports 80
+
+# View deployment progress.
+az container show --resource-group $rg --name $aci_name --query instanceView.state
