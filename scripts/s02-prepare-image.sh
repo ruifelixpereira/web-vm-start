@@ -46,19 +46,20 @@ check_required_arguments
 ####################################################################################
 
 # Create image
-docker build -t $image_name:$image_version ..
+az acr build --registry $acr_name --image $image_name:$image_version --file ../Dockerfile ..
+#docker build -t $image_name:$image_version ..
 
 # Login to ACR.
-az acr login --name $acr_name
+#az acr login --name $acr_name
 
 # Get login server name
-acrLoginServer=$(az acr show --name $acr_name --query loginServer --output tsv)
+#acrLoginServer=$(az acr show --name $acr_name --query loginServer --output tsv)
 
 # Tag image
-docker tag $image_name:$image_version $acrLoginServer/$image_name:$image_version
+#docker tag $image_name:$image_version $acrLoginServer/$image_name:$image_version
 
 # Push image
-docker push $acrLoginServer/$image_name:$image_version
+#docker push $acrLoginServer/$image_name:$image_version
 
 # List images in repository
 az acr repository list --name $acr_name --output table

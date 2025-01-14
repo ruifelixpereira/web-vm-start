@@ -13,6 +13,8 @@ required_vars=(
     "aci_name"
     "vnet_name"
     "vnet_prefix"
+    "default_subnet_name"
+    "default_subnet_prefix"
     "aci_subnet_name"
     "aci_subnet_prefix"
 )
@@ -80,10 +82,20 @@ fi
 nt_query=$(az network vnet list -g $rg --query "[?name=='$vnet_name']")
 if [ "$nt_query" == "[]" ]; then
     echo -e "\nCreating Vnet '$vnet_name'"
-    az network vnet create -g $rg -n $vnet_name --address-prefix $vnet_prefix --subnet-name $aci_subnet_name --subnet-prefixes $aci_subnet_prefix
+    az network vnet create -g $rg -n $vnet_name --address-prefix $vnet_prefix --subnet-name $default_subnet_name --subnet-prefixes $default_subnet_prefix
 else
     echo "Vnet $vnet_name already exists."
 fi
+
+#
+# Delegate subnet to ACI
+#
+az network vnet subnet create \
+  --name $aci_subnet_name \
+  --resource-group $rg \
+  --vnet-name $vnet_name \
+  --address-prefixes $aci_subnet_prefix \
+  --delegations Microsoft.ContainerInstance/containerGroups
 
 #
 # Create AAD application

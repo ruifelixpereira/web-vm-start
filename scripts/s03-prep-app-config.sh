@@ -5,12 +5,8 @@ set -a && source .env && set +a
 
 # Required variables
 required_vars=(
-    "rg"
-    "aci_name"
     "aci_dns"
-    "acr_name"
-    "image_name"
-    "image_version"
+    "rg"
     "vnet_name"
     "aci_subnet_name"
 )
@@ -50,26 +46,20 @@ check_required_arguments
 
 ####################################################################################
 
-# Get login server name
-acrLoginServer=$(az acr show --name $acr_name --query loginServer --output tsv)
+#
+# Create a self-signed certificate
+#
+openssl req -x509 -newkey rsa:4096 -nodes -out ssl.crt -keyout ssl.key -days 365 -subj "/C=PT/L=Lisbon/O=Contoso/OU=IT/CN=$aci_dns"
 
-# Get VNET Id
-VNET_ID =$(az network vnet show --resource-group $rg --name $vnet_name --query id --output tsv)
+# Base64-encode secrets and configuration file and output in a single line
+cat nginx.conf | base64 -w 0 > base64-nginx.conf
+cat ssl.crt | base64 -w 0 > base64-ssl.crt
+cat ssl.key | base64 -w 0 > base64-ssl.key
 
-# Deploy container
-az container create \
-    --resource-group $rg \
-    --name $aci_name \
-    --image $acrLoginServer/$image_name:$image_version \
-    --cpu 1 \
-    --memory 1 \
-    --registry-login-server $acrLoginServer \
-    --registry-username <service-principal-ID> \
-    --registry-password <service-principal-password> \
-    --dns-name-label $aci_dns \
-    --vnet $VNET_ID \
-    --subnet $aci_subnet_name \
-    --ports 80
+echo "Secrets and configuration files have been base64-encoded and saved in the following files: base64-nginx.conf, base64-ssl.crt, base64-ssl.key"
 
-# View deployment progress.
-az container show --resource-group $rg --name $aci_name --query instanceView.state
+#
+# Get SUBNET Id
+#
+SUBNET_ID=$(az network vnet subnet show -g $rg -n $aci_subnet_name --vnet-name $vnet_name --query id --output tsv)
+echo SUBNET_ID: $SUBNET_ID

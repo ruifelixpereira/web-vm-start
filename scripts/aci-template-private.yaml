@@ -1,0 +1,48 @@
+api-version: 2019-12-01
+location: northeurope
+name: vmstartpriv
+properties:
+  containers:
+  - name: nginx-with-ssl
+    properties:
+      image: mcr.microsoft.com/oss/nginx/nginx:1.15.5-alpine
+      ports:
+      - port: 443
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+      volumeMounts:
+      - name: nginx-config
+        mountPath: /etc/nginx
+  - name: web-start-vm
+    properties:
+      image: <Enter your registry name here>.azurecr.io/web-vm-start:v1
+      ports:
+      - port: 3000
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+  volumes:
+  - secret:
+      ssl.crt: '<Enter contents of base64-ssl.crt here>'
+      ssl.key: '<Enter contents of base64-ssl.key here>'
+      nginx.conf: '<Enter contents of base64-nginx.conf here>'
+    name: nginx-config
+  ipAddress:
+    ports:
+    - port: 443
+      protocol: TCP
+    type: Private
+  subnetIds:
+    - id: <Enter your subnet id here>
+  osType: Linux
+  imageRegistryCredentials:
+  - server: <Enter your registry name here>.azurecr.io
+    username: <Enter your registry name here>
+    password: '<Enter your registry admin password here>'
+tags: null
+type: Microsoft.ContainerInstance/containerGroups
