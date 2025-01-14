@@ -61,12 +61,12 @@ It creates a self-signed certificate and generates 3 base64 encoded files (`base
 
 Copy the file `scripts/aci-template-private.yaml` (if you want to deploy an ACI app with a private endpoint) or copy the file `scripts/aci-template-public.yaml` (if you want to deploy an ACI app with a public endpoint) to a new file named `scripts/aci.yaml`, customize the following values:
 
-- <Enter your registry name here>
-- <Enter contents of base64-ssl.crt here>
-- <Enter contents of base64-ssl.key here>
-- <Enter contents of base64-nginx.conf here>
-- <Enter your subnet id here>
-- <Enter your registry admin password here>
+- '<Enter your registry name here>'
+- '<Enter contents of base64-ssl.crt here>'
+- '<Enter contents of base64-ssl.key here>'
+- '<Enter contents of base64-nginx.conf here>'
+- '<Enter your subnet id here>'
+- '<Enter your registry admin password here>'
 
 Run the provided script:
 
