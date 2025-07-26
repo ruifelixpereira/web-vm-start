@@ -2,6 +2,8 @@
 
 This web app allows users to start Azure VMs in a self-service approach. It is a simple Node.js app that uses the Azure SDK to interact with Azure VM resources and it's secured with Microsoft Entra ID. Only authenticated users that belong to a well-defined and configurable set of security groups can access the application and execute operations. 
 
+![alt text](docs/images/screen.png)
+
 ## Contents
 
 | File/folder   | Description                                                                                     |
